@@ -134,6 +134,14 @@ flowchart TB
     style Clients fill:#1e1308,stroke:#f59e0b,color:#f0e4cc
 ```
 
+### Demo Video & Sample Data
+
+Demo video and sample recordings are available on Google Drive:
+
+[![Demo Video & Sample Data](https://drive.google.com/drive/folders/1Ti5aqztP9VHas_5AbrH7utSn-G27HZXW?usp=sharing)](https://drive.google.com/drive/folders/1Ti5aqztP9VHas_5AbrH7utSn-G27HZXW?usp=sharing)
+
+> **Sample videos & recordings:** [Google Drive folder](https://drive.google.com/drive/folders/1Ti5aqztP9VHas_5AbrH7utSn-G27HZXW?usp=sharing) — contains demo videos, recordings, and sample SRT outputs.
+
 ## Problem Statement
 
 Accessibility editors currently add non-speech closed caption annotations by hand. This is time-consuming and requires judgment: not every sound should be captioned.
