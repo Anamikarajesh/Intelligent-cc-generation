@@ -1,0 +1,1435 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Intelligent CC Suggestion Tool - Interactive Web UI Mockup</title>
+  <style>
+    /* ── Warm Dark (default) ── */
+    :root {
+      color-scheme: dark;
+      --ink:          #f0e4cc;
+      --ink-strong:   #faf0dc;
+      --muted:        #9a826a;
+      --line:         rgba(255, 190, 110, 0.09);
+      --line-strong:  rgba(255, 190, 110, 0.18);
+      --surface:      rgba(42, 28, 16, 0.72);
+      --surface-hdr:  rgba(36, 24, 13, 0.60);
+      --glass:        rgba(42, 28, 16, 0.55);
+      --gold:         #f59e0b;
+      --gold-dim:     rgba(245, 158, 11, 0.22);
+      --teal:         #34d399;
+      --teal-dim:     rgba(52, 211, 153, 0.18);
+      --rose:         #fb7185;
+      --rose-dim:     rgba(251, 113, 133, 0.20);
+      --amber:        #fb923c;
+      --amber-dim:    rgba(251, 146, 60, 0.20);
+      --slate:        #c4a070;
+      /* legacy alias keys kept for JS-generated markup */
+      --blue:         var(--gold);
+      --blue-soft:    var(--gold-dim);
+      --green:        var(--teal);
+      --green-soft:   var(--teal-dim);
+      --red:          var(--rose);
+      --red-soft:     var(--rose-dim);
+      --shadow:       0 22px 64px rgba(0, 0, 0, 0.55);
+      --shadow-soft:  0 8px 32px rgba(0, 0, 0, 0.38);
+      --radius:       10px;
+      --body-bg:
+        radial-gradient(ellipse at 18% 0%, rgba(245,158,11,.14), transparent 36%),
+        radial-gradient(ellipse at 84% 8%, rgba(180,83,9,.10),   transparent 32%),
+        linear-gradient(155deg, #1e1308 0%, #130d07 52%, #1b1108 100%);
+    }
+
+    /* ── Warm Light (toggled) ── */
+    [data-theme="light"] {
+      color-scheme: light;
+      --ink:          #2d1a09;
+      --ink-strong:   #180e04;
+      --muted:        #7c5a3a;
+      --line:         rgba(130, 72, 20, 0.10);
+      --line-strong:  rgba(130, 72, 20, 0.20);
+      --surface:      rgba(255, 247, 232, 0.82);
+      --surface-hdr:  rgba(255, 248, 236, 0.60);
+      --glass:        rgba(255, 247, 232, 0.66);
+      --gold:         #b45309;
+      --gold-dim:     rgba(180, 83, 9, 0.12);
+      --teal:         #047857;
+      --teal-dim:     rgba(4, 120, 87, 0.12);
+      --rose:         #be123c;
+      --rose-dim:     rgba(190, 18, 60, 0.12);
+      --amber:        #c2410c;
+      --amber-dim:    rgba(194, 65, 12, 0.12);
+      --slate:        #8b5e32;
+      --shadow:       0 22px 64px rgba(80, 36, 8, 0.20);
+      --shadow-soft:  0 8px 32px rgba(80, 36, 8, 0.12);
+      --body-bg:
+        radial-gradient(ellipse at 18% 0%, rgba(245,158,11,.14), transparent 36%),
+        radial-gradient(ellipse at 84% 8%, rgba(180,83,9,.10),   transparent 32%),
+        linear-gradient(155deg, #fdf5e4 0%, #faf0d8 52%, #f7e8cc 100%);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { min-height: 100%; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Inter", "Noto Sans", ui-sans-serif, system-ui, -apple-system,
+                   BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--body-bg);
+      transition: background 220ms ease, color 220ms ease;
+    }
+
+    button, select, input { font: inherit; }
+    button, select { cursor: pointer; }
+
+    .app-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 14px;
+      padding: 14px;
+    }
+
+    /* ── Glass utility ── */
+    .glass {
+      background: var(--surface);
+      border: 1px solid var(--line-strong);
+      box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255, 210, 140, 0.07);
+      backdrop-filter: blur(22px) saturate(1.3);
+      -webkit-backdrop-filter: blur(22px) saturate(1.3);
+      transition: background 220ms ease, border-color 220ms ease;
+    }
+
+    /* ── Topbar ── */
+    .topbar {
+      display: grid;
+      grid-template-columns: minmax(280px, 1fr) auto;
+      align-items: center;
+      gap: 18px;
+      padding: 12px 16px;
+      border-radius: var(--radius);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #d97706, #0f766e);
+      color: white;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.28), 0 8px 22px rgba(217,119,6,.30);
+    }
+
+    h1, h2, h3, p { margin: 0; }
+
+    .brand h1 {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      line-height: 1.2;
+    }
+
+    .brand p {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11.5px;
+    }
+
+    .top-controls {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .field {
+      display: grid;
+      gap: 5px;
+    }
+
+    .field label {
+      color: var(--slate);
+      font-size: 9.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    select,
+    input[type="text"],
+    input[type="number"] {
+      height: 36px;
+      min-width: 112px;
+      padding: 0 10px;
+      border: 1px solid var(--line-strong);
+      border-radius: 7px;
+      background: rgba(255, 200, 120, 0.07);
+      color: var(--ink);
+      outline: none;
+      transition: border-color 140ms ease, box-shadow 140ms ease;
+    }
+
+    [data-theme="light"] select,
+    [data-theme="light"] input[type="text"],
+    [data-theme="light"] input[type="number"] {
+      background: rgba(255, 255, 255, 0.88);
+    }
+
+    select:focus,
+    input:focus,
+    button:focus-visible {
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25);
+      border-color: rgba(245, 158, 11, 0.55);
+      outline: none;
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      min-height: 36px;
+      border: 1px solid var(--line-strong);
+      border-radius: 7px;
+      padding: 0 13px;
+      background: rgba(255, 200, 120, 0.08);
+      color: var(--ink);
+      font-weight: 700;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 130ms ease, box-shadow 130ms ease, background 130ms ease;
+      white-space: nowrap;
+    }
+
+    [data-theme="light"] .btn {
+      background: rgba(255, 255, 255, 0.82);
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+    }
+
+    .btn.primary {
+      color: #fff8ee;
+      background: linear-gradient(135deg, #d97706, #b45309);
+      border-color: rgba(217, 119, 6, 0.50);
+      box-shadow: 0 4px 14px rgba(217,119,6,.25);
+    }
+
+    .btn.primary:hover {
+      box-shadow: 0 8px 22px rgba(217,119,6,.35);
+    }
+
+    .btn.success {
+      color: #ecfdf5;
+      background: linear-gradient(135deg, #059669, #047857);
+      border-color: rgba(5, 150, 105, 0.50);
+      box-shadow: 0 4px 14px rgba(5,150,105,.22);
+    }
+
+    .btn.danger {
+      color: var(--rose);
+      background: var(--rose-dim);
+      border-color: rgba(251, 113, 133, 0.28);
+    }
+
+    /* Theme toggle */
+    .btn.theme-toggle {
+      width: 36px;
+      padding: 0;
+      font-size: 16px;
+    }
+
+    /* ── Workspace ── */
+    .workspace {
+      display: grid;
+      grid-template-columns: 300px minmax(520px, 1fr) 380px;
+      gap: 14px;
+      min-height: 0;
+    }
+
+    .panel {
+      border-radius: var(--radius);
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .panel-header {
+      min-height: 52px;
+      padding: 13px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface-hdr);
+      backdrop-filter: blur(8px);
+    }
+
+    .panel-header h2 {
+      font-size: 13.5px;
+      font-weight: 700;
+      letter-spacing: -0.1px;
+    }
+
+    .panel-body {
+      padding: 16px;
+    }
+
+    .stack {
+      display: grid;
+      gap: 14px;
+    }
+
+    .muted { color: var(--muted); }
+    .tiny  { font-size: 12px; }
+
+    /* ── Tags / badges ── */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      border-radius: 999px;
+      padding: 2px 9px;
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      white-space: nowrap;
+    }
+
+    .tag.ready,
+    .tag.accepted {
+      color: var(--teal);
+      background: var(--teal-dim);
+    }
+
+    .tag.review {
+      color: var(--amber);
+      background: var(--amber-dim);
+    }
+
+    .tag.rejected {
+      color: var(--muted);
+      background: rgba(130, 100, 70, 0.14);
+    }
+
+    .tag.live {
+      color: var(--gold);
+      background: var(--gold-dim);
+    }
+
+    /* ── Left panel ── */
+    .video-select { width: 100%; }
+
+    .progress-strip {
+      height: 6px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(245, 158, 11, 0.12);
+    }
+
+    .progress-strip span {
+      display: block;
+      width: 66%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #d97706, #059669);
+      transition: width 400ms ease;
+    }
+
+    .meta-grid {
+      display: grid;
+      gap: 0;
+      font-size: 12.5px;
+    }
+
+    .meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .meta-row strong { text-align: right; }
+
+    .alert {
+      border: 1px solid rgba(251, 113, 133, 0.24);
+      border-left: 4px solid var(--rose);
+      border-radius: 8px;
+      padding: 12px;
+      background: var(--rose-dim);
+      color: var(--rose);
+      display: none;
+      gap: 8px;
+      font-size: 12.5px;
+    }
+
+    .alert.visible { display: grid; }
+
+    /* ── Video panel ── */
+    .video-panel {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 0;
+    }
+
+    .video-stage {
+      margin: 14px;
+      min-height: 490px;
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+      background-image:
+        linear-gradient(180deg, rgba(10, 5, 0, 0.10), rgba(10, 5, 0, 0.65)),
+        url("https://upload.wikimedia.org/wikipedia/commons/6/69/Classroom_in_India.jpg");
+      background-size: cover;
+      background-position: center;
+      box-shadow: 0 0 0 1px rgba(255, 190, 110, 0.10), 0 12px 40px rgba(0,0,0,.4);
+    }
+
+    .stage-top {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      top: 14px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .scene-chip,
+    .live-chip {
+      padding: 7px 11px;
+      border-radius: 8px;
+      background: rgba(20, 12, 6, 0.72);
+      color: var(--ink-strong, #f0e4cc);
+      border: 1px solid rgba(255, 190, 110, 0.18);
+      box-shadow: 0 8px 24px rgba(0,0,0,.28);
+      font-size: 11.5px;
+      font-weight: 700;
+      backdrop-filter: blur(14px);
+    }
+
+    .live-chip {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--teal);
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0%   { box-shadow: 0 0 0 0   rgba(52, 211, 153, 0.50); }
+      70%  { box-shadow: 0 0 0 9px rgba(52, 211, 153, 0);    }
+      100% { box-shadow: 0 0 0 0   rgba(52, 211, 153, 0);    }
+    }
+
+    .caption-overlay {
+      position: absolute;
+      left: 50%;
+      bottom: 54px;
+      transform: translateX(-50%);
+      max-width: min(620px, 84%);
+      padding: 9px 18px;
+      border-radius: 7px;
+      color: #fff8ee;
+      background: rgba(10, 5, 0, 0.80);
+      font-size: 19px;
+      font-weight: 700;
+      text-align: center;
+      border: 1px solid rgba(255, 190, 110, 0.15);
+      box-shadow: 0 8px 28px rgba(0,0,0,.35);
+    }
+
+    .analysis-card {
+      position: absolute;
+      right: 16px;
+      bottom: 20px;
+      width: min(320px, 46%);
+      padding: 12px;
+      border-radius: 10px;
+      color: #f0e4cc;
+      background: rgba(18, 10, 4, 0.65);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 190, 110, 0.18);
+      box-shadow: 0 8px 24px rgba(0,0,0,.30);
+    }
+
+    .analysis-card h3 {
+      margin-bottom: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 0.3px;
+    }
+
+    .signal-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+    }
+
+    .signal {
+      padding: 8px;
+      border-radius: 7px;
+      background: rgba(255, 190, 110, 0.10);
+      font-size: 10.5px;
+      border: 1px solid rgba(255, 190, 110, 0.10);
+    }
+
+    .signal strong {
+      display: block;
+      margin-top: 3px;
+      font-size: 15px;
+      color: #f0e4cc;
+    }
+
+    /* ── Transport ── */
+    .transport {
+      display: grid;
+      grid-template-columns: auto auto 1fr auto auto;
+      gap: 9px;
+      align-items: center;
+      padding: 0 14px 14px;
+    }
+
+    .timecode {
+      font-variant-numeric: tabular-nums;
+      color: var(--slate);
+      font-size: 12.5px;
+      font-weight: 700;
+    }
+
+    .timeline {
+      position: relative;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(255, 190, 110, 0.10);
+      overflow: hidden;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,.18);
+      cursor: pointer;
+      border: 1px solid var(--line);
+    }
+
+    .timeline-fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 36%;
+      background: linear-gradient(90deg, rgba(217,119,6,.65), rgba(5,150,105,.45));
+    }
+
+    .scrubber {
+      position: absolute;
+      top: 4px;
+      left: calc(36% - 7px);
+      width: 14px;
+      height: 24px;
+      border-radius: 7px;
+      background: var(--ink-strong, #faf0dc);
+      border: 2.5px solid var(--gold);
+      box-shadow: 0 4px 12px rgba(0,0,0,.30);
+      cursor: grab;
+      z-index: 5;
+    }
+
+    .event-marker {
+      position: absolute;
+      top: 6px;
+      width: 9px;
+      height: 20px;
+      border-radius: 999px;
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 3px 10px rgba(0,0,0,.28);
+      z-index: 4;
+    }
+
+    .event-marker.accepted { background: var(--teal); }
+    .event-marker.review   { background: var(--amber); }
+    .event-marker.rejected { background: var(--muted); }
+
+    .event-marker.active {
+      transform: scale(1.28);
+      outline: 3px solid rgba(245, 158, 11, 0.35);
+    }
+
+    /* ── Review panel ── */
+    .review-list {
+      display: grid;
+      gap: 10px;
+      max-height: calc(100vh - 190px);
+      overflow: auto;
+      padding: 16px;
+      padding-right: 10px;
+    }
+
+    .review-list::-webkit-scrollbar { width: 4px; }
+    .review-list::-webkit-scrollbar-track { background: transparent; }
+    .review-list::-webkit-scrollbar-thumb {
+      background: var(--line-strong);
+      border-radius: 99px;
+    }
+
+    .suggestion {
+      border: 1px solid var(--line-strong);
+      border-radius: 9px;
+      padding: 12px;
+      background: rgba(255, 190, 110, 0.05);
+      display: grid;
+      gap: 10px;
+      transition: border 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+      cursor: pointer;
+    }
+
+    [data-theme="light"] .suggestion {
+      background: rgba(255, 255, 255, 0.55);
+    }
+
+    .suggestion:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 22px rgba(0,0,0,.22);
+    }
+
+    .suggestion.active {
+      border-color: rgba(245, 158, 11, 0.65);
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.12), 0 8px 22px rgba(0,0,0,.22);
+    }
+
+    .suggestion-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .suggestion-title strong {
+      font-variant-numeric: tabular-nums;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .caption-input {
+      width: 100%;
+      min-width: 0;
+      font-weight: 600;
+      padding-left: 10px;
+    }
+
+    .score-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+    }
+
+    .score {
+      border-radius: 7px;
+      padding: 8px;
+      background: rgba(255, 190, 110, 0.10);
+      font-size: 10.5px;
+      border: 1px solid var(--line);
+    }
+
+    [data-theme="light"] .score {
+      background: rgba(255, 245, 220, 0.80);
+    }
+
+    .score strong {
+      display: block;
+      margin-top: 3px;
+      color: var(--ink);
+      font-size: 14.5px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+
+    /* ── Table ── */
+    .table-panel {
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+      background: transparent;
+    }
+
+    th, td {
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      white-space: nowrap;
+      vertical-align: middle;
+    }
+
+    th {
+      color: var(--slate);
+      background: var(--surface-hdr);
+      font-size: 9.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    tr.active-row td {
+      background: rgba(245, 158, 11, 0.08);
+    }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      max-width: 360px;
+      padding: 12px 15px;
+      border-radius: 9px;
+      color: var(--ink-strong, #f0e4cc);
+      background: rgba(28, 18, 8, 0.94);
+      border: 1px solid rgba(255, 190, 110, 0.18);
+      box-shadow: var(--shadow);
+      transform: translateY(16px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 160ms ease, transform 160ms ease;
+      z-index: 10;
+      font-size: 13px;
+    }
+
+    .toast.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── Modal ── */
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      background: rgba(8, 4, 0, 0.55);
+      backdrop-filter: blur(4px);
+      z-index: 20;
+      padding: 24px;
+    }
+
+    .modal.visible { display: grid; }
+
+    .modal-card {
+      width: min(520px, 100%);
+      border-radius: 12px;
+      padding: 20px;
+      background: var(--surface-strong, rgba(42,28,16,.96));
+      border: 1px solid var(--line-strong);
+      box-shadow: var(--shadow);
+      display: grid;
+      gap: 14px;
+    }
+
+    [data-theme="light"] .modal-card {
+      background: rgba(255, 250, 240, 0.97);
+    }
+
+    .modal-card pre {
+      margin: 0;
+      overflow: auto;
+      padding: 13px;
+      border-radius: 8px;
+      color: var(--ink);
+      background: rgba(255, 190, 110, 0.07);
+      border: 1px solid var(--line);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    [data-theme="light"] .modal-card pre {
+      background: rgba(255, 245, 220, 0.90);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 1180px) {
+      .workspace { grid-template-columns: 1fr; }
+      .review-list { max-height: none; }
+      .video-stage { min-height: 430px; }
+      .analysis-card { width: min(360px, 80%); }
+    }
+
+    @media (max-width: 760px) {
+      .app-shell { padding: 10px; }
+      .topbar { grid-template-columns: 1fr; }
+      .top-controls { justify-content: stretch; }
+      .top-controls .field,
+      .top-controls .btn,
+      .top-controls select { width: 100%; }
+      .transport { grid-template-columns: 1fr 1fr; }
+      .timeline { grid-column: 1 / -1; }
+      .timecode { grid-column: 1 / -1; }
+      .video-stage { min-height: 360px; }
+      .analysis-card { left: 14px; right: 14px; width: auto; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar glass">
+      <section class="brand" aria-label="Product identity">
+        <div class="brand-mark">CC</div>
+        <div>
+          <h1>Intelligent Closed Caption Suggestion Tool</h1>
+          <p>Non-speech sound detection, visual reaction scoring, and editor-reviewed SRT export</p>
+        </div>
+      </section>
+
+      <section class="top-controls" aria-label="Pipeline controls">
+        <div class="field">
+          <label for="device">Device</label>
+          <select id="device">
+            <option value="auto">Auto</option>
+            <option value="cpu">CPU</option>
+            <option value="cuda">GPU</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="language">Language</label>
+          <select id="language">
+            <option value="en">English</option>
+            <option value="hi" selected>Hindi</option>
+            <option value="ta">Tamil</option>
+            <option value="te">Telugu</option>
+            <option value="bn">Bengali</option>
+            <option value="mr">Marathi</option>
+            <option value="ml">Malayalam</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="audioBackend">Audio Backend</label>
+          <select id="audioBackend">
+            <option>YAMNet</option>
+            <option>PANNs</option>
+            <option>AST</option>
+            <option>BEATs</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="visionBackend">Vision Backend</label>
+          <select id="visionBackend">
+            <option>MediaPipe</option>
+            <option>OpenCV only</option>
+            <option>MMPose</option>
+          </select>
+        </div>
+        <button class="btn" id="doctorBtn" type="button">Run Doctor</button>
+        <button class="btn theme-toggle" id="themeBtn" type="button" title="Toggle light / dark">☀</button>
+      </section>
+    </header>
+
+    <section class="workspace">
+      <aside class="panel glass">
+        <div class="panel-header">
+          <h2>Input Video</h2>
+          <span class="tag ready" id="runStatus">Ready</span>
+        </div>
+        <div class="panel-body stack">
+          <div class="field">
+            <label for="videoSelect">Select Video</label>
+            <select id="videoSelect" class="video-select">
+              <option>bangalore_classroom_clip.mp4</option>
+              <option>hindi_learning_session.mov</option>
+              <option>regional_school_activity.mkv</option>
+            </select>
+          </div>
+
+          <button class="btn primary" id="startBtn" type="button">Start Caption</button>
+          <div class="progress-strip" aria-label="Analysis progress"><span id="analysisProgress"></span></div>
+
+          <div class="meta-grid">
+            <div class="meta-row"><span class="muted">Scene</span><strong>Classroom near Bangalore</strong></div>
+            <div class="meta-row"><span class="muted">Duration</span><strong>00:06:42</strong></div>
+            <div class="meta-row"><span class="muted">Resolution</span><strong>2047 x 1372</strong></div>
+            <div class="meta-row"><span class="muted">Audio</span><strong>16 kHz mono</strong></div>
+            <div class="meta-row"><span class="muted">Detected events</span><strong id="detectedCount">5</strong></div>
+            <div class="meta-row"><span class="muted">Accepted</span><strong id="acceptedCount">2</strong></div>
+            <div class="meta-row"><span class="muted">Source</span><strong>Demo classroom video</strong></div>
+          </div>
+
+          <div class="alert" id="gpuAlert">
+            <strong>GPU diagnostic</strong>
+            <span>CUDA was selected but not detected. Retry on CPU or run doctor for setup details.</span>
+            <div class="actions">
+              <button class="btn" id="retryCpuBtn" type="button">Retry CPU</button>
+              <button class="btn" id="copyReportBtn" type="button">Copy Report</button>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn success" data-export="SRT" type="button">Export SRT</button>
+            <button class="btn" data-export="JSON" type="button">Export JSON</button>
+            <button class="btn" data-export="CSV" type="button">Export CSV</button>
+          </div>
+        </div>
+      </aside>
+
+      <section class="panel glass video-panel">
+        <div class="panel-header">
+          <h2>Video Review</h2>
+          <span class="timecode" id="timecode">00:02:18 / 00:06:42</span>
+        </div>
+
+        <div class="video-stage" aria-label="Classroom video preview mockup">
+          <div class="stage-top">
+            <div class="scene-chip" id="currentEventChip">Current event: children_cheer</div>
+            <div class="live-chip"><span class="pulse"></span><span id="playState">Paused</span></div>
+          </div>
+          <div class="caption-overlay" id="captionOverlay">[children cheering]</div>
+          <div class="analysis-card">
+            <h3>Live signal explanation</h3>
+            <div class="signal-grid">
+              <div class="signal">Audio<strong id="stageAudio">0.91</strong></div>
+              <div class="signal">Reaction<strong id="stageReaction">0.82</strong></div>
+              <div class="signal">Decision<strong id="stageDecision">0.88</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="transport">
+          <button class="btn" id="playBtn" type="button">Play</button>
+          <button class="btn" id="pauseBtn" type="button">Pause</button>
+          <div class="timeline" id="timeline" aria-label="Interactive draggable timeline">
+            <div class="timeline-fill" id="timelineFill"></div>
+            <div class="scrubber" id="scrubber" title="Drag to scrub"></div>
+          </div>
+          <button class="btn" id="prevBtn" type="button">Previous</button>
+          <button class="btn" id="nextBtn" type="button">Next Event</button>
+        </div>
+      </section>
+
+      <aside class="panel glass">
+        <div class="panel-header">
+          <h2>Review SRT Suggestions</h2>
+          <span class="tag review" id="reviewBadge">3 need review</span>
+        </div>
+        <div class="review-list" id="reviewList"></div>
+      </aside>
+    </section>
+
+    <section class="table-panel glass">
+      <table>
+        <thead>
+          <tr>
+            <th>Status</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Event</th>
+            <th>Audio</th>
+            <th>Reaction</th>
+            <th>Decision</th>
+            <th>Reason</th>
+          </tr>
+        </thead>
+        <tbody id="eventTable"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <div class="modal" id="doctorModal" aria-hidden="true">
+    <div class="modal-card glass">
+      <h2>Environment Doctor</h2>
+      <p class="muted">Mock diagnostic report for the proposed CLI/Web UI experience.</p>
+      <pre>ffmpeg: found
+audio backend: YAMNet ready
+vision backend: MediaPipe ready
+torch.cuda.is_available(): false
+selected device: auto
+actual device: cpu
+suggestion: use --device cpu or install CUDA-compatible runtime</pre>
+      <div class="actions">
+        <button class="btn primary" id="closeDoctorBtn" type="button">Close</button>
+        <button class="btn" id="doctorCopyBtn" type="button">Copy Report</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const totalDuration = 402;
+    let currentTime = 138;
+    let playing = false;
+    let selectedIndex = 0;
+    let timer = null;
+
+    const labels = {
+      en: {
+        children_cheer: "[children cheering]",
+        school_bell: "[school bell rings]",
+        applause: "[students applauding]",
+        chair_scrape: "[chair scrapes]",
+        background_chatter: "[background chatter]"
+      },
+      hi: {
+        children_cheer: "[बच्चे उत्साह से चिल्लाते हैं]",
+        school_bell: "[स्कूल की घंटी बजती है]",
+        applause: "[छात्र तालियां बजाते हैं]",
+        chair_scrape: "[कुर्सी घिसटती है]",
+        background_chatter: "[पृष्ठभूमि में बातचीत]"
+      },
+      ta: {
+        children_cheer: "[குழந்தைகள் ஆரவாரம் செய்கின்றனர்]",
+        school_bell: "[பள்ளி மணி ஒலிக்கிறது]",
+        applause: "[மாணவர்கள் கைத்தட்டுகின்றனர்]",
+        chair_scrape: "[நாற்காலி இழுக்கும் சத்தம்]",
+        background_chatter: "[பின்னணி பேச்சு]"
+      },
+      te: {
+        children_cheer: "[పిల్లలు ఆనందంగా కేకలు వేస్తున్నారు]",
+        school_bell: "[పాఠశాల గంట మోగుతుంది]",
+        applause: "[విద్యార్థులు చప్పట్లు కొడుతున్నారు]",
+        chair_scrape: "[కుర్చీ లాగిన శబ్దం]",
+        background_chatter: "[నేపథ్యంలో మాటలు]"
+      },
+      bn: {
+        children_cheer: "[শিশুরা উল্লাস করছে]",
+        school_bell: "[স্কুলের ঘণ্টা বাজছে]",
+        applause: "[ছাত্ররা হাততালি দিচ্ছে]",
+        chair_scrape: "[চেয়ার ঘষার শব্দ]",
+        background_chatter: "[পেছনে কথাবার্তা]"
+      },
+      mr: {
+        children_cheer: "[मुले आनंदाने ओरडत आहेत]",
+        school_bell: "[शाळेची घंटा वाजते]",
+        applause: "[विद्यार्थी टाळ्या वाजवत आहेत]",
+        chair_scrape: "[खुर्ची ओढल्याचा आवाज]",
+        background_chatter: "[पार्श्वभूमीत गप्पा]"
+      },
+      ml: {
+        children_cheer: "[കുട്ടികൾ ആഹ്ലാദിക്കുന്നു]",
+        school_bell: "[സ്കൂൾ മണി മുഴങ്ങുന്നു]",
+        applause: "[വിദ്യാർത്ഥികൾ കൈയടിക്കുന്നു]",
+        chair_scrape: "[കസേര വലിക്കുന്ന ശബ്ദം]",
+        background_chatter: "[പശ്ചാത്തല സംഭാഷണം]"
+      }
+    };
+
+    const events = [
+      {
+        id: "children_cheer",
+        start: 138.1,
+        end: 140.2,
+        status: "accepted",
+        audio: 0.91,
+        reaction: 0.82,
+        decision: 0.88,
+        reason: "Accepted because students raise their hands and cheer in the classroom scene.",
+        caption: "[children cheering]"
+      },
+      {
+        id: "school_bell",
+        start: 174.4,
+        end: 176.0,
+        status: "accepted",
+        audio: 0.86,
+        reaction: 0.61,
+        decision: 0.78,
+        reason: "Accepted because the bell interrupts the class and students visibly shift attention.",
+        caption: "[school bell rings]"
+      },
+      {
+        id: "applause",
+        start: 218.5,
+        end: 221.8,
+        status: "review",
+        audio: 0.74,
+        reaction: 0.54,
+        decision: 0.66,
+        reason: "Needs review because clapping is detected, but the reaction score is moderate.",
+        caption: "[students applauding]"
+      },
+      {
+        id: "chair_scrape",
+        start: 287.2,
+        end: 288.3,
+        status: "review",
+        audio: 0.58,
+        reaction: 0.39,
+        decision: 0.49,
+        reason: "Borderline event; the sound may be a chair scrape but scene impact is unclear.",
+        caption: "[chair scrapes]"
+      },
+      {
+        id: "background_chatter",
+        start: 326.0,
+        end: 333.5,
+        status: "rejected",
+        audio: 0.52,
+        reaction: 0.16,
+        decision: 0.29,
+        reason: "Rejected because the chatter is ambient and does not change the scene.",
+        caption: "[background chatter]"
+      }
+    ];
+
+    const els = {
+      reviewList: document.getElementById("reviewList"),
+      eventTable: document.getElementById("eventTable"),
+      timeline: document.getElementById("timeline"),
+      timelineFill: document.getElementById("timelineFill"),
+      scrubber: document.getElementById("scrubber"),
+      timecode: document.getElementById("timecode"),
+      captionOverlay: document.getElementById("captionOverlay"),
+      currentEventChip: document.getElementById("currentEventChip"),
+      stageAudio: document.getElementById("stageAudio"),
+      stageReaction: document.getElementById("stageReaction"),
+      stageDecision: document.getElementById("stageDecision"),
+      playState: document.getElementById("playState"),
+      toast: document.getElementById("toast"),
+      gpuAlert: document.getElementById("gpuAlert"),
+      device: document.getElementById("device"),
+      language: document.getElementById("language"),
+      reviewBadge: document.getElementById("reviewBadge"),
+      acceptedCount: document.getElementById("acceptedCount"),
+      runStatus: document.getElementById("runStatus"),
+      analysisProgress: document.getElementById("analysisProgress"),
+      doctorModal: document.getElementById("doctorModal")
+    };
+
+    function pad(value) {
+      return String(value).padStart(2, "0");
+    }
+
+    function formatTime(seconds, ms = false) {
+      const safe = Math.max(0, seconds);
+      const h = Math.floor(safe / 3600);
+      const m = Math.floor((safe % 3600) / 60);
+      const s = Math.floor(safe % 60);
+      const milli = Math.floor((safe - Math.floor(safe)) * 1000);
+      if (ms) {
+        return `${pad(h)}:${pad(m)}:${pad(s)},${String(milli).padStart(3, "0")}`;
+      }
+      return `${pad(h)}:${pad(m)}:${pad(s)}`;
+    }
+
+    function showToast(message) {
+      els.toast.textContent = message;
+      els.toast.classList.add("visible");
+      window.clearTimeout(showToast.timeout);
+      showToast.timeout = window.setTimeout(() => els.toast.classList.remove("visible"), 2200);
+    }
+
+    function selectedLanguageLabels() {
+      return labels[els.language.value] || labels.en;
+    }
+
+    function captionFor(event) {
+      return selectedLanguageLabels()[event.id] || event.caption;
+    }
+
+    function statusClass(status) {
+      if (status === "accepted") return "accepted";
+      if (status === "review") return "review";
+      return "rejected";
+    }
+
+    function statusLabel(status) {
+      if (status === "accepted") return "Accepted";
+      if (status === "review") return "Review";
+      return "Rejected";
+    }
+
+    function renderMarkers() {
+      document.querySelectorAll(".event-marker").forEach((marker) => marker.remove());
+      events.forEach((event, index) => {
+        const marker = document.createElement("button");
+        marker.type = "button";
+        marker.className = `event-marker ${statusClass(event.status)}${index === selectedIndex ? " active" : ""}`;
+        marker.style.left = `calc(${(event.start / totalDuration) * 100}% - 5px)`;
+        marker.title = `${event.id}: ${formatTime(event.start, true)}`;
+        marker.setAttribute("aria-label", `Jump to ${event.id}`);
+        marker.addEventListener("click", (e) => {
+          e.stopPropagation();
+          selectEvent(index, true);
+        });
+        els.timeline.appendChild(marker);
+      });
+    }
+
+    function renderReviews() {
+      els.reviewList.innerHTML = "";
+      events.forEach((event, index) => {
+        const card = document.createElement("article");
+        card.className = `suggestion${index === selectedIndex ? " active" : ""}`;
+        card.innerHTML = `
+          <div class="suggestion-title">
+            <strong>${formatTime(event.start, true)} - ${formatTime(event.end, true)}</strong>
+            <span class="tag ${statusClass(event.status)}">${statusLabel(event.status)}</span>
+          </div>
+          <input class="caption-input" type="text" value="${captionFor(event)}" aria-label="Caption text for ${event.id}">
+          <div class="score-grid">
+            <div class="score">Audio<strong>${event.audio.toFixed(2)}</strong></div>
+            <div class="score">Reaction<strong>${event.reaction.toFixed(2)}</strong></div>
+            <div class="score">Decision<strong>${event.decision.toFixed(2)}</strong></div>
+          </div>
+          <p class="muted tiny">${event.reason}</p>
+          <div class="actions">
+            <button class="btn success" data-action="accept" type="button">Accept</button>
+            <button class="btn danger" data-action="reject" type="button">Reject</button>
+            <button class="btn" data-action="jump" type="button">Jump</button>
+          </div>
+        `;
+        card.addEventListener("click", () => selectEvent(index, false));
+        card.querySelector("input").addEventListener("input", (e) => {
+          event.caption = e.target.value;
+          if (index === selectedIndex) {
+            els.captionOverlay.textContent = e.target.value;
+          }
+        });
+        card.querySelector('[data-action="accept"]').addEventListener("click", (e) => {
+          e.stopPropagation();
+          updateStatus(index, "accepted");
+        });
+        card.querySelector('[data-action="reject"]').addEventListener("click", (e) => {
+          e.stopPropagation();
+          updateStatus(index, "rejected");
+        });
+        card.querySelector('[data-action="jump"]').addEventListener("click", (e) => {
+          e.stopPropagation();
+          selectEvent(index, true);
+        });
+        els.reviewList.appendChild(card);
+      });
+    }
+
+    function renderTable() {
+      els.eventTable.innerHTML = "";
+      events.forEach((event, index) => {
+        const row = document.createElement("tr");
+        row.className = index === selectedIndex ? "active-row" : "";
+        row.innerHTML = `
+          <td><span class="tag ${statusClass(event.status)}">${statusLabel(event.status)}</span></td>
+          <td>${formatTime(event.start, true)}</td>
+          <td>${formatTime(event.end, true)}</td>
+          <td>${event.id}</td>
+          <td>${event.audio.toFixed(2)}</td>
+          <td>${event.reaction.toFixed(2)}</td>
+          <td>${event.decision.toFixed(2)}</td>
+          <td>${event.reason}</td>
+        `;
+        row.addEventListener("click", () => selectEvent(index, true));
+        els.eventTable.appendChild(row);
+      });
+    }
+
+    function updateCounts() {
+      const accepted = events.filter((event) => event.status === "accepted").length;
+      const review = events.filter((event) => event.status === "review").length;
+      els.acceptedCount.textContent = String(accepted);
+      els.reviewBadge.textContent = `${review} need review`;
+    }
+
+    function updateStage() {
+      const event = events[selectedIndex];
+      els.captionOverlay.textContent = captionFor(event);
+      els.currentEventChip.textContent = `Current event: ${event.id}`;
+      els.stageAudio.textContent = event.audio.toFixed(2);
+      els.stageReaction.textContent = event.reaction.toFixed(2);
+      els.stageDecision.textContent = event.decision.toFixed(2);
+      els.timecode.textContent = `${formatTime(currentTime)} / ${formatTime(totalDuration)}`;
+    }
+
+    function updateTimeline() {
+      const percent = Math.min(100, Math.max(0, (currentTime / totalDuration) * 100));
+      els.timelineFill.style.width = `${percent}%`;
+      els.scrubber.style.left = `calc(${percent}% - 7px)`;
+      els.timecode.textContent = `${formatTime(currentTime)} / ${formatTime(totalDuration)}`;
+    }
+
+    function selectEvent(index, jump) {
+      selectedIndex = index;
+      if (jump) {
+        currentTime = events[index].start;
+      }
+      updateStage();
+      updateTimeline();
+      renderMarkers();
+      renderReviews();
+      renderTable();
+    }
+
+    function updateStatus(index, status) {
+      events[index].status = status;
+      selectEvent(index, false);
+      updateCounts();
+      showToast(`${events[index].id} marked as ${status}.`);
+    }
+
+    function setPlaying(next) {
+      playing = next;
+      els.playState.textContent = playing ? "Playing" : "Paused";
+      window.clearInterval(timer);
+      if (playing) {
+        timer = window.setInterval(() => {
+          currentTime += 1;
+          if (currentTime >= totalDuration) {
+            currentTime = totalDuration;
+            setPlaying(false);
+          }
+          const closest = events.findIndex((event) => currentTime >= event.start && currentTime <= event.end + 1);
+          if (closest >= 0 && closest !== selectedIndex) {
+            selectedIndex = closest;
+            updateStage();
+            renderMarkers();
+            renderReviews();
+            renderTable();
+          }
+          updateTimeline();
+        }, 800);
+      }
+    }
+
+    function scrubToClientX(clientX) {
+      const box = els.timeline.getBoundingClientRect();
+      const ratio = Math.min(1, Math.max(0, (clientX - box.left) / box.width));
+      currentTime = ratio * totalDuration;
+      updateTimeline();
+    }
+
+    function initTimelineDrag() {
+      let dragging = false;
+      els.timeline.addEventListener("pointerdown", (event) => {
+        dragging = true;
+        els.timeline.setPointerCapture(event.pointerId);
+        scrubToClientX(event.clientX);
+      });
+      els.timeline.addEventListener("pointermove", (event) => {
+        if (dragging) scrubToClientX(event.clientX);
+      });
+      els.timeline.addEventListener("pointerup", (event) => {
+        dragging = false;
+        els.timeline.releasePointerCapture(event.pointerId);
+        const nearest = events.reduce((bestIndex, item, index) => {
+          const bestDistance = Math.abs(events[bestIndex].start - currentTime);
+          const nextDistance = Math.abs(item.start - currentTime);
+          return nextDistance < bestDistance ? index : bestIndex;
+        }, 0);
+        if (Math.abs(events[nearest].start - currentTime) < 8) {
+          selectEvent(nearest, true);
+        }
+      });
+    }
+
+    document.getElementById("playBtn").addEventListener("click", () => setPlaying(true));
+    document.getElementById("pauseBtn").addEventListener("click", () => setPlaying(false));
+    document.getElementById("nextBtn").addEventListener("click", () => selectEvent((selectedIndex + 1) % events.length, true));
+    document.getElementById("prevBtn").addEventListener("click", () => selectEvent((selectedIndex + events.length - 1) % events.length, true));
+
+    document.getElementById("startBtn").addEventListener("click", () => {
+      els.runStatus.textContent = "Analyzing";
+      els.runStatus.className = "tag live";
+      els.analysisProgress.style.width = "18%";
+      showToast("Running audio detection and visual reaction scoring...");
+      window.setTimeout(() => {
+        els.analysisProgress.style.width = "100%";
+        els.runStatus.textContent = "Ready";
+        els.runStatus.className = "tag ready";
+        showToast("Caption suggestions are ready for review.");
+      }, 900);
+    });
+
+    els.device.addEventListener("change", () => {
+      if (els.device.value === "cuda") {
+        els.gpuAlert.classList.add("visible");
+        showToast("GPU mode requested. Mock diagnostic: CUDA unavailable.");
+      } else {
+        els.gpuAlert.classList.remove("visible");
+        showToast(`Device mode set to ${els.device.value}.`);
+      }
+    });
+
+    document.getElementById("retryCpuBtn").addEventListener("click", () => {
+      els.device.value = "cpu";
+      els.gpuAlert.classList.remove("visible");
+      showToast("Retrying with CPU mode.");
+    });
+
+    document.getElementById("copyReportBtn").addEventListener("click", () => showToast("Diagnostic report copied."));
+    document.getElementById("doctorCopyBtn").addEventListener("click", () => showToast("Doctor report copied."));
+
+    document.getElementById("doctorBtn").addEventListener("click", () => {
+      els.doctorModal.classList.add("visible");
+      els.doctorModal.setAttribute("aria-hidden", "false");
+    });
+
+    document.getElementById("closeDoctorBtn").addEventListener("click", () => {
+      els.doctorModal.classList.remove("visible");
+      els.doctorModal.setAttribute("aria-hidden", "true");
+    });
+
+    els.doctorModal.addEventListener("click", (event) => {
+      if (event.target === els.doctorModal) {
+        els.doctorModal.classList.remove("visible");
+        els.doctorModal.setAttribute("aria-hidden", "true");
+      }
+    });
+
+    els.language.addEventListener("change", () => {
+      renderReviews();
+      updateStage();
+      showToast(`Caption label language changed to ${els.language.options[els.language.selectedIndex].text}.`);
+    });
+
+    document.querySelectorAll("[data-export]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const type = button.getAttribute("data-export");
+        showToast(`${type} export prepared from accepted editor suggestions.`);
+      });
+    });
+
+    // Theme toggle
+    const themeBtn = document.getElementById("themeBtn");
+    function applyTheme(dark) {
+      document.documentElement.setAttribute("data-theme", dark ? "" : "light");
+      themeBtn.textContent = dark ? "☀" : "🌙";
+      themeBtn.title = dark ? "Switch to light mode" : "Switch to dark mode";
+    }
+    themeBtn.addEventListener("click", () => {
+      const isDark = document.documentElement.getAttribute("data-theme") !== "light";
+      applyTheme(!isDark);
+    });
+    // default: dark
+    applyTheme(true);
+
+    initTimelineDrag();
+    renderMarkers();
+    renderReviews();
+    renderTable();
+    updateCounts();
+    selectEvent(0, true);
+  </script>
+</body>
+</html>

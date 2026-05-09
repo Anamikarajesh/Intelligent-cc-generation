@@ -1,0 +1,2 @@
+# Core scaffold intentionally uses only the Python standard library.
+# Real model backends will add optional dependencies as they are implemented.

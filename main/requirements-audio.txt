@@ -1,0 +1,6 @@
+# CPU DSP backend uses only the Python standard library plus ffmpeg.
+#
+# Optional YAMNet semantic backend:
+numpy>=1.26
+tensorflow>=2.16
+tensorflow-hub>=0.16

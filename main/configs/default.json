@@ -1,0 +1,17 @@
+{
+  "language": "en",
+  "device": "auto",
+  "audio_backend": "mock",
+  "vision_backend": "mock",
+  "yamnet_model": null,
+  "yamnet_class_map_path": null,
+  "yamnet_top_k": 5,
+  "audio_threshold": 0.45,
+  "reaction_threshold": 0.35,
+  "decision_threshold": 0.65,
+  "review_threshold": 0.5,
+  "min_event_duration": 0.25,
+  "merge_gap": 0.4,
+  "sample_window_before": 1.0,
+  "sample_window_after": 1.0
+}

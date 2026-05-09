@@ -1,0 +1,2 @@
+[console_scripts]
+ccs = cc_suggester.cli.app:main
