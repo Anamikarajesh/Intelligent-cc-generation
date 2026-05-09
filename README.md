@@ -48,7 +48,7 @@ The Web UI is built as a modern editor workspace with **warm dark glassmorphism 
 
 #### Dark Mode (Default) — Hindi
 
-![Web UI Dark Mode with Hindi captions](docs/webui_hindi.png)
+![Web UI Dark Mode with Hindi captions](mockups/hindi.png)
 
 The warm dark glassmorphism design features:
 - Deep amber/charcoal background with warm gold accents
@@ -58,16 +58,81 @@ The warm dark glassmorphism design features:
 #### Multilingual Support
 
 **Telugu:**
-![Web UI Telugu](docs/webui_telugu.png)
+![Web UI Telugu](mockups/telugu.png)
 
 **Malayalam:**
-![Web UI Malayalam](docs/webui_malayalam.png)
+![Web UI Malayalam](mockups/mallu.png)
 
 Caption labels update live across all panels when language is changed.
 
 #### Architecture & System Diagram
 
-![System Architecture](docs/Architecture.png)
+```mermaid
+flowchart TB
+    subgraph Inputs["Video Input"]
+        VIDEO["Raw Video\n(.mp4, .mov, .mkv)"]
+    end
+
+    subgraph Audio["Audio Analysis"]
+        direction TB
+        EXTRACT["Audio Extraction\n(ffmpeg)"]
+        DSP["DSP Baseline\n(RMS, STFT, Onsets)"]
+        A_MODELS["Audio ML Backends\n(YAMNet / PANNs / AST)"]
+        SMOOTH["Event Smoothing\n(Merge, Filter, Normalize)"]
+        EXTRACT --> DSP --> A_MODELS --> SMOOTH
+    end
+
+    subgraph Vision["Visual Reaction"]
+        direction TB
+        FRAMES["Frame Sampler\n(before / during / after)"]
+        FLOW["Optical Flow\n(OpenCV)"]
+        V_MODELS["Vision ML Backends\n(MediaPipe / MMPose)"]
+        REACT["Reaction Scoring"]
+        FRAMES --> FLOW --> REACT
+        FRAMES --> V_MODELS --> REACT
+    end
+
+    subgraph Decision["Decision Engine"]
+        direction TB
+        SCORER["Scorer\n(audio + reaction + importance\n- ambient penalty)"]
+        LABELS["Caption Labels\n(Glossary per language)"]
+        SCORER --> LABELS
+    end
+
+    subgraph Outputs["Exports"]
+        direction LR
+        SRT["SRT\n(accepted captions)"]
+        JSON["JSON\n(full debug report)"]
+        CSV["CSV\n(reviewer spreadsheet)"]
+    end
+
+    subgraph Clients["User Interfaces"]
+        direction LR
+        CLI["CLI\n(ccs analyze / doctor / export)"]
+        WEB["Web UI\n(Streamlit editor workspace)"]
+    end
+
+    VIDEO --> EXTRACT
+    SMOOTH --> AudioEvents["Audio Event\nCandidates"]
+    AudioEvents --> FRAMES
+    AudioEvents --> SCORER
+    REACT --> SCORER
+    LABELS --> SRT
+    SCORER --> JSON
+    SCORER --> CSV
+
+    CLI --> VIDEO
+    CLI --> SCORER
+    WEB --> VIDEO
+    WEB --> SCORER
+
+    style Inputs fill:#1e1308,stroke:#f59e0b,color:#f0e4cc
+    style Audio fill:#1e1308,stroke:#f59e0b,color:#f0e4cc
+    style Vision fill:#1e1308,stroke:#f59e0b,color:#f0e4cc
+    style Decision fill:#1e1308,stroke:#f59e0b,color:#f0e4cc
+    style Outputs fill:#1e1308,stroke:#f59e0b,color:#f0e4cc
+    style Clients fill:#1e1308,stroke:#f59e0b,color:#f0e4cc
+```
 
 ## Problem Statement
 
